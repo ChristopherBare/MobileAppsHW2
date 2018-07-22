@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -154,17 +156,20 @@ public class AddExpense extends AppCompatActivity implements IPickResult {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if ( ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+                    ActivityCompat.requestPermissions(AddExpense.this, new String[] {Manifest.permission.CAMERA}, REQUEST_IMAGE_CAPTURE);
+                }
                 try {
                     PackageManager pm = getPackageManager();
-                    int hasPerm = pm.checkPermission(Manifest.permission.CAMERA, getPackageName());
-                    if (hasPerm == PackageManager.PERMISSION_GRANTED) {
+                    int hasPerm = 1;
+                    if (hasPerm != PackageManager.PERMISSION_GRANTED) {
                         pickImage();
                     } else {
-                        Toast.makeText(AddExpense.this, "Camera Permission Error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddExpense.this, "Camera Permission Error | else", Toast.LENGTH_SHORT).show();
                         Log.i(TAG, "onClick: " + hasPerm);
                     }
                 } catch (Exception e) {
-                    Toast.makeText(AddExpense.this, "Camera Permission error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddExpense.this, "Camera Permission error | catch", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }

@@ -36,9 +36,10 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
 
         final Expense expense = mDataset.get(position);
         holder.expense_name.setText(expense.getName());
-        holder.expense_cost.setText(decimalFormat.format(expense.getCost()));
+        holder.expense_cost.setText(expense.getCostAsString());
         holder.expense_date.setText(expense.getDate());
         holder.expense_id.setText(expense.getUniqueID());
+        holder.expense_id.setVisibility(View.GONE);
 
         holder.expense_editButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +70,18 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
             expense_cost = view.findViewById(R.id.expenseItem_cost);
             expense_date = view.findViewById(R.id.expenseItem_date);
             expense_editButton = view.findViewById(R.id.expenseItem_editButton);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Expense expense = new Expense();
+                    expense.setUniqueID(expense_id.getText().toString());
+                    expense.setName(expense_name.getText().toString());
+                    expense.setCost(Double.parseDouble(expense_cost.getText().toString().substring(1)));
+                    expense.setDate(expense_date.getText().toString());
+                    MainActivity.viewExpense(expense);
+                }
+            });
         }
     }
 }

@@ -3,11 +3,9 @@ package com.example.homework2;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -22,8 +20,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
@@ -78,31 +74,29 @@ public class AddExpense extends AppCompatActivity {
         saveButton = findViewById(R.id.editExp_save);
         imageView = findViewById(R.id.editExp_imageView);
 
+
         // If the user is editing an expense
-        if (getIntent() != null && getIntent().getExtras() != null) {
+        if (getIntent() != null && getIntent().getExtras().getSerializable(MainActivity.EXPENSE_KEY) != null) {
 
             // Get the expense being passed in
             expense = (Expense) getIntent().getSerializableExtra(MainActivity.EXPENSE_KEY);
+            StorageReference imageRef = storageReference.child(expense.getUniqueID());
 
             // Set the views
             label.setText(R.string.label_editExpense);
             id.setText(expense.getUniqueID());
             name.setText(expense.getName());
-            cost.setText(Double.toString(expense.getCost()));
+            cost.setText(expense.getCostAsString());
             date.setText(expense.getDate());
             date.setVisibility(View.VISIBLE);
             saveButton.setText(R.string.label_saveExpense);
 
-            StorageReference imageRef = storageReference.child(expense.getUniqueID());
-
             try {
                 Glide.with(this)
-                    .using(new FirebaseImageLoader())
-                    .load(imageRef)
-                    .into(imageView);
-            } catch (Error e) {
-                Log.d("demo", "Error loading image: " + e);
-            }
+                        .using(new FirebaseImageLoader())
+                        .load(imageRef)
+                        .into(imageView);
+            } catch (Error e) { }
         }
 
         //Selecting a date
@@ -115,11 +109,11 @@ public class AddExpense extends AppCompatActivity {
                     //Listener method
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        date.setText((month+1)+"/"+dayOfMonth+"/"+year);
+                        date.setText((month + 1) + "/" + dayOfMonth + "/" + year);
                         date.setVisibility(View.VISIBLE);
                     }
 
-                //Rest of DatePickerDialog setup
+                    //Rest of DatePickerDialog setup
                 }, year, month, day);
 
                 //Display the DatePickerDialog
@@ -140,12 +134,13 @@ public class AddExpense extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (name.getText()!=null && cost.getText()!=null && date!=null) {
+                if (name.getText() != null && cost.getText() != null && date != null) {
                     //Initialize a new expense
                     expense = new Expense();
 
                     //Set the expense fields
-                    if (!id.getText().toString().equals("I.D.")) expense.setUniqueID(id.getText().toString());
+                    if (!id.getText().toString().equals("I.D."))
+                        expense.setUniqueID(id.getText().toString());
                     expense.setName(name.getText().toString());
                     expense.setCost(Double.parseDouble(cost.getText().toString()));
                     expense.setDate(date.getText().toString());
@@ -190,7 +185,9 @@ public class AddExpense extends AppCompatActivity {
 
         //Save the image
         StorageReference imageRef = storageReference.child(expense.getUniqueID());
-        if (byteData != null) imageRef.putBytes(byteData);
+        if (byteData != null) {
+            imageRef.putBytes(byteData);
+        }
 
         //Finish the activity
         finish();

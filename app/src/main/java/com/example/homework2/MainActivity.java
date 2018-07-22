@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference db_root = FirebaseDatabase.getInstance().getReference();
 
     final static String EXPENSE_KEY = "EXPENSE";
+    final static String EXPENSE_EDIT_CODE = "EDIT";
 
     DialogInterface.OnClickListener dialogClickListener;
     private static Context context;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 expenses.clear();
+                total = 0;
                 for (DataSnapshot node : dataSnapshot.getChildren() ) {
                     Expense expense = node.getValue(Expense.class);
                     total += expense.getCost();
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, AddExpense.class);
+                intent.putExtra(MainActivity.EXPENSE_EDIT_CODE, true);
                 startActivity(intent);
             }
         });
@@ -130,6 +133,13 @@ public class MainActivity extends AppCompatActivity {
 
     public static void editExpense(Expense expense) {
         Intent intent = new Intent(context, AddExpense.class);
+        intent.putExtra(MainActivity.EXPENSE_KEY, expense);
+        intent.putExtra(MainActivity.EXPENSE_EDIT_CODE, true);
+        context.startActivity(intent);
+    }
+
+    public static void viewExpense(Expense expense) {
+        Intent intent = new Intent(context, ViewExpense.class);
         intent.putExtra(MainActivity.EXPENSE_KEY, expense);
         context.startActivity(intent);
     }

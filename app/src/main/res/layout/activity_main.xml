@@ -14,12 +14,12 @@
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:focusable="true"
-        app:backgroundTint="@android:color/holo_blue_bright"
+        app:backgroundTint="#6dcc00"
         app:elevation="0dp"
         app:fabSize="mini"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:rippleColor="@android:color/holo_blue_light"
+        app:rippleColor="@android:color/holo_green_light"
         app:srcCompat="@android:drawable/ic_menu_add" />
 
     <TextView

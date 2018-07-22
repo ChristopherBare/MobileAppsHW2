@@ -1,6 +1,8 @@
 package com.example.homework2;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class Expense implements Serializable {
     private String name, date, uniqueID;
@@ -35,6 +37,11 @@ public class Expense implements Serializable {
 
     public double getCost() {
         return cost;
+    }
+
+    public String getCostAsString() {
+        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
+        return format.format(getCost());
     }
 
     public void setCost(double cost) {

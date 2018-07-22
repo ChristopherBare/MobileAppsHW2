@@ -1,0 +1,22 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Expense Manager</string>
+    <string name="label_name">Name</string>
+    <string name="label_cost">Cost:</string>
+    <string name="label_date">Date:</string>
+    <string name="label_editExpense">Edit Expense:</string>
+    <string name="hint_cost">Cost</string>
+    <string name="label_receipt">Receipt:</string>
+    <string name="label_chooseDate">Pick a Date</string>
+    <string name="label_chooseImage">Choose Image</string>
+    <string name="label_saveExpense">Save Expense</string>
+    <string name="label_addExpense">Add Expense:</string>
+    <string name="label_addExpense_noColon">Add Expense</string>
+    <string name="label_dateView">[date]</string>
+    <string name="label_expenses">Expenses:</string>
+    <string name="label_total">Total:</string>
+    <string name="label_totalView">[total]</string>
+    <string name="option_ResetAll">Reset All</string>
+    <string name="option_sortCost">Sort by Cost</string>
+    <string name="option_sortDate">Sort by Date</string>
+    <string name="label_id">I.D.</string>
+</resources>

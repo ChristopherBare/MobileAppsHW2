@@ -2,7 +2,9 @@ package com.example.homework2;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     final static String EXPENSE_KEY = "EXPENSE";
 
+    DialogInterface.OnClickListener dialogClickListener;
     private static Context context;
     double total;
 
@@ -80,7 +83,10 @@ public class MainActivity extends AppCompatActivity {
                     total += expense.getCost();
                     expenses.add(expense);
                 }
+                expenses.sort(Comparator.comparing(Expense::getDate));
                 expenseAdapter.notifyDataSetChanged();
+                TextView totalView = findViewById(R.id.totalView);
+                totalView.setText("$"+decimalFormat.format(total));
             }
 
             @Override
@@ -96,12 +102,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Display the total for the expenses
-        TextView totalView = findViewById(R.id.totalView);
-        Log.d("demo", "Expenses length: " + expenses.size());
-        for (Expense e : expenses) total+=e.getCost();
-        totalView.setText("$"+decimalFormat.format(total));
+        dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        db_root.child("expenses").removeValue();
+                        total = 0;
+                        expenseAdapter.notifyDataSetChanged();
+                        break;
 
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
 
     }//end onCreate
 
@@ -132,8 +148,10 @@ public class MainActivity extends AppCompatActivity {
                 expenseAdapter.notifyDataSetChanged();
                 return true;
             case R.id.option_3:
-                db_root.child("expenses").removeValue();
-                expenseAdapter.notifyDataSetChanged();
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder .setMessage("Are you sure?")
+                        .setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

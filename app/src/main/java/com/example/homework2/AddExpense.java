@@ -47,7 +47,8 @@ import java.util.Locale;
 
 public class AddExpense extends AppCompatActivity implements IPickResult {
 
-    static final int REQUEST_IMAGE_CAPTURE = 001;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final String TAG = "info";
     private final int PICK_IMAGE_CAMERA = 1, PICK_IMAGE_GALLERY = 2;
 
     private File destination = null;
@@ -158,6 +159,9 @@ public class AddExpense extends AppCompatActivity implements IPickResult {
                     int hasPerm = pm.checkPermission(Manifest.permission.CAMERA, getPackageName());
                     if (hasPerm == PackageManager.PERMISSION_GRANTED) {
                         pickImage();
+                    } else {
+                        Toast.makeText(AddExpense.this, "Camera Permission Error", Toast.LENGTH_SHORT).show();
+                        Log.i(TAG, "onClick: " + hasPerm);
                     }
                 } catch (Exception e) {
                     Toast.makeText(AddExpense.this, "Camera Permission error", Toast.LENGTH_SHORT).show();

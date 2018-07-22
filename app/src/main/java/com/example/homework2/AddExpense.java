@@ -73,7 +73,7 @@ public class AddExpense extends AppCompatActivity implements IPickResult {
     Expense expense;
     Bitmap bitmap;
     byte[] byteData;
-    Uri image;
+
 
     PickSetup setup = new PickSetup()
             .setPickTypes(EPickType.GALLERY, EPickType.CAMERA);
@@ -227,7 +227,7 @@ public class AddExpense extends AppCompatActivity implements IPickResult {
 
         //Save the image
         StorageReference imageRef = storageReference.child(expense.getUniqueID());
-        if (image != null) imageRef.putFile(image);
+        if (byteData != null) imageRef.putBytes(byteData);
 
         //Finish the activity
         finish();
@@ -238,15 +238,18 @@ public class AddExpense extends AppCompatActivity implements IPickResult {
         if (r.getError() == null) {
             //If you want the Uri.
             //Mandatory to refresh image from Uri.
-            imageView.setImageURI(null);
+            //imageView.setImageURI(null);
 
             //Setting the real returned image.
-            imageView.setImageURI(r.getUri());
-            image = r.getUri();
+            //imageView.setImageURI(r.getUri());
 
             //If you want the Bitmap.
-//            bitmap = r.getBitmap();
-//            imageView.setImageBitmap(r.getBitmap());
+            bitmap = r.getBitmap();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+            byteData = baos.toByteArray();
+            imageView.setImageBitmap(r.getBitmap());
 
             dialog.dismiss();
 

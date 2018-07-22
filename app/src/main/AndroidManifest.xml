@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.homework2">
+    <!--<uses-feature android:name="android.hardware.camera" />-->
+
 
 
     <application
@@ -17,8 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddExpense" />
-        <activity android:name=".ViewExpense"></activity>
+        <activity android:name=".AddExpense"></activity>
     </application>
 
 </manifest>

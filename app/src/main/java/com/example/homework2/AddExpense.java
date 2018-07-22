@@ -11,8 +11,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,7 +45,7 @@ import java.util.Locale;
 
 public class AddExpense extends AppCompatActivity {
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_IMAGE_CAPTURE = 001;
     private final int PICK_IMAGE_CAMERA = 1, PICK_IMAGE_GALLERY = 2;
 
     private File destination = null;
@@ -181,9 +179,6 @@ public class AddExpense extends AppCompatActivity {
     // Get photo from camera
     private void dispatchTakePictureIntent() {
             try {
-                PackageManager pm = getPackageManager();
-                int hasPerm =  pm.checkPermission(Manifest.permission.CAMERA, getPackageName());
-                if (hasPerm == PackageManager.PERMISSION_GRANTED) {
                     final CharSequence[] options = {"Take Photo", "Choose From Gallery","Cancel"};
                     android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(AddExpense.this);
                     builder.setTitle("Select Option");
@@ -204,10 +199,8 @@ public class AddExpense extends AppCompatActivity {
                         }
                     });
                     builder.show();
-                } else
-                    Toast.makeText(this, "Camera Permission error | else", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
-                Toast.makeText(this, "Camera Permission error | catch", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Camera Permission error", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
         }

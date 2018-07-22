@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -72,9 +73,11 @@ public class AddExpense extends AppCompatActivity implements IPickResult {
     Expense expense;
     Bitmap bitmap;
     byte[] byteData;
+    Uri image;
 
     PickSetup setup = new PickSetup()
             .setPickTypes(EPickType.GALLERY, EPickType.CAMERA);
+    PickImageDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,7 +204,7 @@ public class AddExpense extends AppCompatActivity implements IPickResult {
 
     // Get photo from camera
     private void pickImage() {
-        PickImageDialog.build(setup)
+        dialog = PickImageDialog.build(setup)
                 .setOnClick(new IPickClick() {
                     @Override
                     public void onGalleryClick() {
@@ -217,67 +220,6 @@ public class AddExpense extends AppCompatActivity implements IPickResult {
                 }).show(this);
         }
 
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
-            inputStreamImg = null;
-            if (requestCode == PICK_IMAGE_CAMERA) {
-                try {
-                    Uri selectedImage = data.getData();
-                    bitmap = (Bitmap) data.getExtras().get("data");
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bytes);
-
-                    Log.e("Activity", "Pick from Camera::>>> ");
-
-                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-                    destination = new File(Environment.getExternalStorageDirectory() + "/" +
-                            getString(R.string.app_name), "IMG_" + timeStamp + ".jpg");
-                    FileOutputStream fo;
-                    try {
-                        destination.createNewFile();
-                        fo = new FileOutputStream(destination);
-                        fo.write(bytes.toByteArray());
-                        fo.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    imgPath = destination.getAbsolutePath();
-                    imageView.setImageBitmap(bitmap);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else if (requestCode == PICK_IMAGE_GALLERY) {
-                Uri selectedImage = data.getData();
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bytes);
-                    Log.e("Activity", "Pick from Gallery::>>> ");
-
-                    imgPath = getRealPathFromURI(selectedImage);
-                    destination = new File(imgPath.toString());
-                    imageView.setImageBitmap(bitmap);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public String getRealPathFromURI(Uri contentUri) {
-            String[] proj = {MediaStore.Audio.Media.DATA};
-            Cursor cursor = managedQuery(contentUri, proj, null, null, null);
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        }
-
-
     // ADD TO DATABASE
     private void addExpenseToDb(Expense expense) {
         //Save the expense
@@ -285,7 +227,7 @@ public class AddExpense extends AppCompatActivity implements IPickResult {
 
         //Save the image
         StorageReference imageRef = storageReference.child(expense.getUniqueID());
-        if (byteData != null) imageRef.putBytes(byteData);
+        if (image != null) imageRef.putFile(image);
 
         //Finish the activity
         finish();
@@ -296,13 +238,17 @@ public class AddExpense extends AppCompatActivity implements IPickResult {
         if (r.getError() == null) {
             //If you want the Uri.
             //Mandatory to refresh image from Uri.
-            //getImageView().setImageURI(null);
+            imageView.setImageURI(null);
 
             //Setting the real returned image.
-            //getImageView().setImageURI(r.getUri());
+            imageView.setImageURI(r.getUri());
+            image = r.getUri();
 
             //If you want the Bitmap.
-            imageView.setImageBitmap(r.getBitmap());
+//            bitmap = r.getBitmap();
+//            imageView.setImageBitmap(r.getBitmap());
+
+            dialog.dismiss();
 
             //Image path
             //r.getPath();

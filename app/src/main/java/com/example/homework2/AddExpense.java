@@ -2,12 +2,10 @@ package com.example.homework2;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -28,8 +26,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
+import com.vansuita.pickimage.bean.PickResult;
+import com.vansuita.pickimage.bundle.PickSetup;
+import com.vansuita.pickimage.dialog.PickImageDialog;
+import com.vansuita.pickimage.enums.EPickType;
+import com.vansuita.pickimage.listeners.IPickClick;
+import com.vansuita.pickimage.listeners.IPickResult;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,7 +45,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class AddExpense extends AppCompatActivity {
+public class AddExpense extends AppCompatActivity implements IPickResult {
 
     static final int REQUEST_IMAGE_CAPTURE = 001;
     private final int PICK_IMAGE_CAMERA = 1, PICK_IMAGE_GALLERY = 2;
@@ -67,6 +69,9 @@ public class AddExpense extends AppCompatActivity {
     Expense expense;
     Bitmap bitmap;
     byte[] byteData;
+
+    PickSetup setup = new PickSetup()
+            .setPickTypes(EPickType.GALLERY, EPickType.CAMERA);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +153,16 @@ public class AddExpense extends AppCompatActivity {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dispatchTakePictureIntent();
+                try {
+                    PackageManager pm = getPackageManager();
+                    int hasPerm = pm.checkPermission(Manifest.permission.CAMERA, getPackageName());
+                    if (hasPerm == PackageManager.PERMISSION_GRANTED) {
+                        pickImage();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(AddExpense.this, "Camera Permission error", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -177,37 +191,21 @@ public class AddExpense extends AppCompatActivity {
     }
 
     // Get photo from camera
-    private void dispatchTakePictureIntent() {
-            try {
-                PackageManager pm = getPackageManager();
-                int hasPerm = pm.checkPermission(Manifest.permission.CAMERA, getPackageName());
-                if (hasPerm == PackageManager.PERMISSION_GRANTED) {
-                    final CharSequence[] options = {"Take Photo", "Choose From Gallery","Cancel"};
-                    android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(AddExpense.this);
-                    builder.setTitle("Select Option");
-                    builder.setItems(options, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int item) {
-                            if (options[item].equals("Take Photo")) {
-                                dialog.dismiss();
-                                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                startActivityForResult(intent, PICK_IMAGE_CAMERA);
-                            } else if (options[item].equals("Choose From Gallery")) {
-                                dialog.dismiss();
-                                Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                startActivityForResult(pickPhoto, PICK_IMAGE_GALLERY);
-                            } else if (options[item].equals("Cancel")) {
-                                dialog.dismiss();
-                            }
-                        }
-                    });
-                    builder.show();
-                } else
-                    Toast.makeText(this, "Camera Permission error", Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                Toast.makeText(this, "Camera Permission error", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
+    private void pickImage() {
+        PickImageDialog.build(setup)
+                .setOnClick(new IPickClick() {
+                    @Override
+                    public void onGalleryClick() {
+                        Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(pickPhoto, PICK_IMAGE_GALLERY);
+                    }
+
+                    @Override
+                    public void onCameraClick() {
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(intent, PICK_IMAGE_CAMERA);
+                    }
+                }).show(this);
         }
 
         @Override
@@ -282,6 +280,28 @@ public class AddExpense extends AppCompatActivity {
 
         //Finish the activity
         finish();
+    }
+
+    @Override
+    public void onPickResult(PickResult r) {
+        if (r.getError() == null) {
+            //If you want the Uri.
+            //Mandatory to refresh image from Uri.
+            //getImageView().setImageURI(null);
+
+            //Setting the real returned image.
+            //getImageView().setImageURI(r.getUri());
+
+            //If you want the Bitmap.
+            imageView.setImageBitmap(r.getBitmap());
+
+            //Image path
+            //r.getPath();
+        } else {
+            //Handle possible errors
+            //TODO: do what you have to do with r.getError();
+            Toast.makeText(this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
 }

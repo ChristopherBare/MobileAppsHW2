@@ -86,7 +86,7 @@ public class AddExpense extends AppCompatActivity {
             label.setText(R.string.label_editExpense);
             id.setText(expense.getUniqueID());
             name.setText(expense.getName());
-            cost.setText(expense.getCostAsString());
+            cost.setText(Double.toString(expense.getCost()));
             date.setText(expense.getDate());
             date.setVisibility(View.VISIBLE);
             saveButton.setText(R.string.label_saveExpense);

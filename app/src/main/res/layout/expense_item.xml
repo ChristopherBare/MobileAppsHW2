@@ -33,13 +33,23 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/expenseItem_cost"
+                android:id="@+id/expenseItem_formattedCost"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/label_cost"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/expenseItem_name" />
+
+            <TextView
+                android:id="@+id/expenseItem_rawCost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/hint_cost"
+                app:layout_constraintStart_toEndOf="@+id/expenseItem_formattedCost"
                 app:layout_constraintTop_toBottomOf="@+id/expenseItem_name" />
 
             <TextView
@@ -50,7 +60,7 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/label_date"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/expenseItem_cost" />
+                app:layout_constraintTop_toBottomOf="@+id/expenseItem_formattedCost" />
 
             <ImageView
                 android:id="@+id/expenseItem_editButton"

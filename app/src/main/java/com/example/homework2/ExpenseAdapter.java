@@ -1,7 +1,6 @@
 package com.example.homework2;
 
 
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 
 public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHolder> {
     private ArrayList<Expense> mDataset;
-    DecimalFormat decimalFormat = new DecimalFormat("#.00");
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public ExpenseAdapter(ArrayList<Expense> myDataset) {
@@ -36,7 +34,8 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
 
         final Expense expense = mDataset.get(position);
         holder.expense_name.setText(expense.getName());
-        holder.expense_cost.setText(expense.getCostAsString());
+        holder.expense_fCost.setText(expense.getCostAsString());
+        holder.expense_rCost.setText(Double.toString(expense.getCost()));
         holder.expense_date.setText(expense.getDate());
         holder.expense_id.setText(expense.getUniqueID());
         holder.expense_id.setVisibility(View.GONE);
@@ -60,24 +59,28 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        TextView expense_id, expense_name, expense_cost, expense_date;
+        TextView expense_id, expense_name, expense_fCost, expense_rCost, expense_date;
         ImageView expense_editButton;
 
         public ViewHolder(View view) {
             super(view);
             expense_id = view.findViewById(R.id.expenseItem_id);
             expense_name = view.findViewById(R.id.expenseItem_name);
-            expense_cost = view.findViewById(R.id.expenseItem_cost);
+            expense_fCost = view.findViewById(R.id.expenseItem_formattedCost);
+            expense_rCost = view.findViewById(R.id.expenseItem_rawCost);
+            expense_rCost.setVisibility(View.GONE);
             expense_date = view.findViewById(R.id.expenseItem_date);
             expense_editButton = view.findViewById(R.id.expenseItem_editButton);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    DecimalFormat decimalFormat = new DecimalFormat("#.00");
+                    Number number = 0;
                     Expense expense = new Expense();
                     expense.setUniqueID(expense_id.getText().toString());
                     expense.setName(expense_name.getText().toString());
-                    expense.setCost(Double.parseDouble(expense_cost.getText().toString().substring(1)));
+                    expense.setCost(Double.parseDouble(expense_rCost.getText().toString()));
                     expense.setDate(expense_date.getText().toString());
                     MainActivity.viewExpense(expense);
                 }

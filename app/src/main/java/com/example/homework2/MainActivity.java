@@ -27,10 +27,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Locale;
 
 import static java.util.Comparator.comparingDouble;
 
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Used for formatting prices
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
+        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(Locale.US);
 
         //Setup recycler view to display data
         recycler = (RecyclerView) findViewById(R.id.expense_recycler);
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 expenses.sort(Comparator.comparing(Expense::getDate));
                 expenseAdapter.notifyDataSetChanged();
                 TextView totalView = findViewById(R.id.totalView);
-                totalView.setText("$"+decimalFormat.format(total));
+                totalView.setText(numberFormat.format(total));
             }
 
             @Override

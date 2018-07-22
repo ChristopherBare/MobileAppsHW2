@@ -29,14 +29,14 @@ public class ViewExpense extends AppCompatActivity {
         StorageReference imageRef = storageReference.child(expense.getUniqueID());
 
         TextView name = findViewById(R.id.viewExp_name);
-        TextView cost = findViewById(R.id.viewExp_cost);
+        TextView cost = findViewById(R.id.viewExp_formattedCost);
         TextView date = findViewById(R.id.viewExp_date);
         TextView id = findViewById(R.id.viewExp_id);
         ImageView image = findViewById(R.id.viewExp_imageView);
 
         name.setText(expense.getName());
         date.setText(expense.getDate());
-        cost.setText("$"+decimalFormat.format(expense.getCost()));
+        cost.setText(expense.getCostAsString());
         id.setText("Expense ID: " + expense.getUniqueID());
         try {
             Glide.with(this)

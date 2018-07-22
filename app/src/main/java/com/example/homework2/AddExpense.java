@@ -240,6 +240,10 @@ public class AddExpense extends AppCompatActivity {
 
                     imgPath = destination.getAbsolutePath();
                     imageView.setImageBitmap(bitmap);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+                    byteData = baos.toByteArray();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -255,6 +259,10 @@ public class AddExpense extends AppCompatActivity {
                     imgPath = getRealPathFromURI(selectedImage);
                     destination = new File(imgPath.toString());
                     imageView.setImageBitmap(bitmap);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+                    byteData = baos.toByteArray();
 
                 } catch (Exception e) {
                     e.printStackTrace();
